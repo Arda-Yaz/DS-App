@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 from scipy.stats import ttest_ind, ttest_rel
 
-
 def statistical_analysis_page():
     st.title("T-Testing")
 
