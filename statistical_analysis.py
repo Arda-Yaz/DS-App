@@ -2,11 +2,6 @@ import pandas as pd
 import streamlit as st
 from scipy.stats import ttest_ind, ttest_rel
 
-#"Sayfada dosya yüklenecek.
-# Yüklenen dosyanın içeriği ekranda gösterilecek
-# ve kullanıcıdan güven düzeyi, t testi yapılacak sütunların seçilmesi istenecek.
-# Sonuç olarak testin sonuçları ve hangi hipotezin reddedilip edilemeyeceği bilgisi ekranda verilecek.
-# Ayrıca seçilen sütunlar ilgili testi yapmak için uygun değilse bir bilgi olarak verilecek."
 
 def statistical_analysis_page():
     st.title("T-Testing")
