@@ -5,7 +5,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import root_mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
-
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.svm import SVR
 
 def machine_learning_page():
     st.title("Machine Models")
@@ -36,7 +37,20 @@ def machine_learning_page():
 
 
         if len(selected_features) > 0:
-            model_option = st.selectbox("Select a model", ["Linear Regression", "Decision Tree"])
+            model_option = st.selectbox("Select a model", ["Linear Regression", "Decision Tree", "Random Forest",
+                                                           "Support Vector Machine (SVM)"])
+
+            if model_option in ["Decision Tree","Random Forest","Support Vector Machine (SVM)"]:
+                model_depth = st.slider("Max Depth", 1, 20, 5)
+
+            if model_option == "Random Forest":
+                estimated_n = st.slider("Number of Trees", 10, 100, value=50)
+
+            if model_option == "Support Vector Machine (SVM)":
+                kernel_type = st.selectbox("Kernel Type", ["linear", "rbf", "poly", "sigmoid"])
+                regularization_c = st.slider("Regularization Parameter (C)", 0.1, 10.0, value=1.0)
+                svm_percentage = st.slider("Percentage of data for SVM", 5, 50, 20)
+            #Since SVM does not work well with huge number of data and it takes time to train model, implemented a slider to take a sample
 
             if st.button("Train Model"):
                 X = df[selected_features]
@@ -46,15 +60,35 @@ def machine_learning_page():
                 #test_size = 0.2  -> 20% for testing, 80% for training (Can leave the choice up to User in the future)
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-
-
                 if model_option == "Linear Regression":
                     model = LinearRegression()
                     model.fit(X_train, y_train)
+
                 elif model_option == "Decision Tree":
-                    model_depth = st.slider("Max Depth", 1, 20, 5)
-                    model = DecisionTreeRegressor(max_depth=model_depth)
+                    model = DecisionTreeRegressor(max_depth = model_depth)
                     model.fit(X_train, y_train)
+
+                elif model_option == "Random Forest":
+                    model = RandomForestRegressor(
+                        n_estimators= estimated_n,
+                        max_depth = model_depth,
+                        random_state=42
+                    )
+                    model.fit(X_train, y_train)
+
+                elif model_option == "Support Vector Machine (SVM)":
+                    # Store the amount of data that will be used for SVM training
+                    sample_size = int(len(X_train) * (svm_percentage / 100))
+
+                    # Randomly sample the rows for X_train and y_train
+                    sampled_indices = X_train.sample(n=sample_size, random_state=42).index
+                    X_train_svm = X_train.loc[sampled_indices]
+                    y_train_svm = y_train.loc[sampled_indices]
+
+                    st.write(f"Using a randomized subset of {len(X_train_svm)} rows for SVM training.")
+
+                    model = SVR(kernel="rbf")  # Default kernel
+                    model.fit(X_train_svm, y_train_svm)
 
                 # Save the trained model and features in session state in order to avoid rendering issues
                 st.session_state.model = model
@@ -68,8 +102,14 @@ def machine_learning_page():
                 test_error = root_mean_squared_error(y_test, y_pred_test)
                 #!!!!! Look for ways to improve RMSE
 
+                r2_train = model.score(X_train, y_train)
+                r2_test = model.score(X_test, y_test)
+
+                #If-else statement to show scores based on models type. Regression or Classification0
                 st.write(f"Training RMSE: {train_error:.2f}")
                 st.write(f"Testing RMSE: {test_error:.2f}")
+                st.write(f"Training R²: {r2_train:.2f}")
+                st.write(f"Testing R²: {r2_test:.2f}")
 
     if "model" in st.session_state:
         st.subheader("Make Predictions")
