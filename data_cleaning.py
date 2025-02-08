@@ -2,8 +2,7 @@ import pandas as pd
 import streamlit as st
 
 def data_cleaning_page():
-    st.title("Let's see if this works")
-    st.write("WHY DID YOU REDEEM IT")
+    st.title("Data Cleaning")
 
     # After 50+ line of code I learned that you need to create a session state
     # in order to save the changes we made to our dataframe
