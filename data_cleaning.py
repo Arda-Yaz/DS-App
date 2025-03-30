@@ -2,8 +2,8 @@ import pandas as pd
 import streamlit as st
 
 
-def load_dataset():
-    st.session_state.df = pd.read_csv("Cleaned_Students_Performance.csv")
+def load_dataset(data):
+    st.session_state.df = pd.read_csv(data)
 
 def data_cleaning_page():
     st.title("Data Cleaning")
@@ -14,8 +14,12 @@ def data_cleaning_page():
     if "df" not in st.session_state:
         st.session_state.df = None
         st.button(
-            label="Example Dataset",
-            on_click=load_dataset
+            label="Pull Cleaned Dataset",
+            on_click=lambda: load_dataset("Cleaned_Students_Performance.csv")
+        )
+        st.button(
+            label="Pull Uncleaned Dataset",
+            on_click=lambda: load_dataset("Uncleaned_Students_Performance.csv")
         )
     if "action_done" not in st.session_state:
         st.session_state.action_done = False
