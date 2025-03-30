@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import root_mean_squared_error
+from sklearn.metrics import root_mean_squared_error, accuracy_score
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 
@@ -37,8 +37,8 @@ def machine_learning_page():
 
 
         if len(selected_features) > 0:
-            model_option = st.selectbox("Select a model", ["Linear Regression", "Decision Tree", "Random Forest",
-                                                           "Support Vector Machine (SVM)"])
+            model_option = st.selectbox("Select a model", ["Linear Regression", "Decision Tree", "Random Forest","K-Nearest Neighbors (KNN)"
+                                                           ,"Support Vector Machine (SVM)"])
 
             if model_option in ["Decision Tree","Random Forest","Support Vector Machine (SVM)"]:
                 model_depth = st.slider("Max Depth", 1, 20, 5)
@@ -51,6 +51,8 @@ def machine_learning_page():
                 regularization_c = st.slider("Regularization Parameter (C)", 0.1, 10.0, value=1.0)
                 svm_percentage = st.slider("Percentage of data for SVM", 5, 50, 20)
             #Since SVM does not work well with huge number of data and it takes time to train model, implemented a slider to take a sample
+            if model_option == "K-Nearest Neighbors (KNN)":
+                neighbors = st.slider("Neighbors", 1,50)
 
             if st.button("Train Model"):
                 X = df[selected_features]
@@ -74,6 +76,11 @@ def machine_learning_page():
                         max_depth = model_depth,
                         random_state=42
                     )
+                    model.fit(X_train, y_train)
+
+
+                elif model_option == "K-Nearest Neighbors (KNN)":
+                    model = KNeighborsClassifier(n_neighbors=neighbors)
                     model.fit(X_train, y_train)
 
                 elif model_option == "Support Vector Machine (SVM)":
@@ -105,11 +112,16 @@ def machine_learning_page():
                 r2_train = model.score(X_train, y_train)
                 r2_test = model.score(X_test, y_test)
 
+                accuracy_train = accuracy_score(y_train, y_pred_train)
+                accuracy_test = accuracy_score(y_test, y_pred_test)
+
                 #If-else statement to show scores based on models type. Regression or Classification0
                 st.write(f"Training RMSE: {train_error:.2f}")
                 st.write(f"Testing RMSE: {test_error:.2f}")
                 st.write(f"Training R²: {r2_train:.2f}")
                 st.write(f"Testing R²: {r2_test:.2f}")
+                st.write(f"Training Accuracy: {accuracy_train:.2f}")
+                st.write(f"Testing Accuracy: {accuracy_test:.2f}")
 
     if "model" in st.session_state:
         st.subheader("Make Predictions")

@@ -1,15 +1,25 @@
 import pandas as pd
 import streamlit as st
 
+
+def load_dataset():
+    st.session_state.df = pd.read_csv("Cleaned_Students_Performance.csv")
+
 def data_cleaning_page():
     st.title("Data Cleaning")
+
 
     # After 50+ line of code I learned that you need to create a session state
     # in order to save the changes we made to our dataframe
     if "df" not in st.session_state:
         st.session_state.df = None
+        st.button(
+            label="Example Dataset",
+            on_click=load_dataset
+        )
     if "action_done" not in st.session_state:
         st.session_state.action_done = False
+
 
 
     df_file = st.file_uploader("Your datasheet in CSV format", type = ["csv"])
