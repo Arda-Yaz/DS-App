@@ -112,17 +112,11 @@ def machine_learning_page():
                 r2_train = model.score(X_train, y_train)
                 r2_test = model.score(X_test, y_test)
 
-                accuracy_train = accuracy_score(y_train, y_pred_train)
-                accuracy_test = accuracy_score(y_test, y_pred_test)
-
                 #If-else statement to show scores based on models type. Regression or Classification0
                 st.write(f"Training RMSE: {train_error:.2f}")
                 st.write(f"Testing RMSE: {test_error:.2f}")
                 st.write(f"Training R²: {r2_train:.2f}")
                 st.write(f"Testing R²: {r2_test:.2f}")
-                st.write(f"Training Accuracy: {accuracy_train:.2f}")
-                st.write(f"Testing Accuracy: {accuracy_test:.2f}")
-
     if "model" in st.session_state:
         st.subheader("Make Predictions")
         #Loop to go through each iteration in selected features and take input for them
